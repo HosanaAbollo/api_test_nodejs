@@ -1,0 +1,97 @@
+- npm init
+- npm install -g nodemon  (en admin)
+- npm install --save express
+- Création du serveur de developpement :
+    - nodemon server.js
+
+- Création du fichier git 
+    - git init
+
+- Creation et configuration du fichier server.js (point d'entrée de l'application)
+- Creation du schema de la BDD avec les tables (users et messages)
+
+
+-------------------------------
+UTILISATION DE L'ORM sequelize
+
+-------------------------------
+
+- installation du cli sequelize
+    - npm install -g sequelize-cli   (en admin)
+
+- npm install --save sequelize 
+- npm install mysql2 --save
+- sequelize init
+
+-------------------------------
+
+
+------------------------------------------------------------------------------
+- COnfigurer la BDD, aller dans config/config.json
+    -remplacer "password" : null par "password" : "LeMotDePasseQueVousDesirez"
+
+------------------------------------------------------------------------------
+
+- Création du model User avec ses attributs et leurs types de données 
+sequelize model:create --attributes "email:string username:string password:string bio:string isAdmin:boolean" --name User
+
+- Création du model message avec ses attributs et leurs types de données 
+sequelize model:create --attributes "idUsers:integer title:string content:string attachement:string likes:integer" --name Message
+
+---> Création de deux nouveaux fichier dans migrations/ et dans models/ (user.js, message.js)
+
+---> Modification des migrations de users et message
+    - ajout des champs allowNull : true ou false selon le besoin dans migrations/
+
+---> Modifications dans models/user.js
+    - classMethods:
+    {
+        associate : function(models){
+            models.User.hasMany(models.Message)
+        }
+    }
+
+---> Modification des migrations de message et ajout de la clé 'references'qui contiendra deux propriétés
+    - ajout des champs allowNull : true ou false selon le besoin dans migrations/
+    - ajoutes a la clé idUsers : 
+    idUsers : {
+        allowNull : false,
+        type: sequelize.INTEGER,
+        references: {
+            model: 'Users',
+            key: 'id'
+        }
+    }
+
+--> retourner dans models/message.js
+    - classMethods:
+    {
+        associate : function(models){
+            models.Message.belongsTo(models.User,
+            {
+                foreignKey: {
+                    allowNull: false
+                }
+            })   
+        }
+    }
+
+
+- Ajout dans config/config.json '_test' à chaque champs database (pour dev, test et prod), par exemple : 
+    "database" : "database_developpement_test",  "database" : "database_test_test",  "database" : "database_production_test"
+-------------------------------------------------------------------------------------------
+-   Création des 3 bdd , juste donner leurs nom (pour test, dev, prod) , pour moi : 
+    create database database_development_test;
+    create database database_test_test;
+    create database database_production_test;
+
+- lancer la migration sequelize
+    - sequelize db:migrate
+
+
+
+
+
+
+
+
